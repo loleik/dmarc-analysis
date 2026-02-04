@@ -32,3 +32,11 @@ erDiagram
 ```
 
 __Note__: The records table enforces UNIQUE (report_id, source_ip, dkim_result, spf_result, disposition).
+
+## Usage
+Install with `pip install -e .` or run directly with `python -m dmarc.cli`.
+
+Arguments:
++ `ingest <user>@<address>/<name> <path>` | Ingest DMARC XML files from a specified directory.
++ `show <user>@<address>/<name> {reports, records}`   | Show the selected table from the database.
++ `-h`     | Show the main help command, or one for a subcommand.
