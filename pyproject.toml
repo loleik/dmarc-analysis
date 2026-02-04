@@ -1,0 +1,16 @@
+[project]
+name = "dmarc"
+version = "0.1.0"
+dependencies = [
+	"beautifulsoup4",
+	"sqlalchemy",
+	"pandas",
+	"argparse",
+	"psycopg2"
+]
+
+[project.scripts]
+dmarc = "dmarc.cli:main"
+
+[tool.setuptools.packages.find]
+exclude = ["data"]
