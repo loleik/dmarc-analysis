@@ -12,5 +12,3 @@ dependencies = [
 [project.scripts]
 dmarc = "dmarc.cli:main"
 
-[tool.setuptools.packages.find]
-exclude = ["data"]
