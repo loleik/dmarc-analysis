@@ -6,7 +6,7 @@ def db_connect(url):
     return engine
 
 
-def db_query(engine, xml_report, xml_records):
+def db_insert(engine, xml_report, xml_records):
     insert_report = text("""
         INSERT INTO reports (
             org_name, begin_ts, end_ts, external_report_id
@@ -56,6 +56,52 @@ def db_query(engine, xml_report, xml_records):
                 "dkim"        : r["dkim"],
                 "spf"         : r["spf"]
             })
+
+
+def db_query_auth(engine):
+    auth_query = """
+        SELECT dkim_result, spf_result, SUM(msg_count) AS total_messages
+        FROM records
+        GROUP BY dkim_result, spf_result
+        ORDER BY total_messages DESC;
+    """
+    print(auth_query)
+    df_auth = pd.read_sql(auth_query, engine)
+    print(df_auth)
+
+
+def db_query_sources(engine):
+    source_query = """
+        SELECT source_ip, SUM(msg_count) AS failed_messages
+        FROM records
+        WHERE dkim_result = 'fail' OR spf_result = 'fail'
+        GROUP BY source_ip
+        ORDER BY failed_messages DESC
+        LIMIT 10;
+    """
+    print(source_query)
+    df_sources = pd.read_sql(source_query, engine)
+    print(df_sources)
+
+
+def db_query_ips(engine):
+    ips_query = """
+        SELECT
+            CASE
+                WHEN family(source_ip) = 6 THEN 'IPv6'
+                ELSE 'IPv4'
+            END AS ip_version,
+            SUM(msg_count) AS total_messages
+        FROM records
+        GROUP BY
+            CASE
+                WHEN family(source_ip) = 6 THEN 'IPv6'
+                ELSE 'IPv4'
+            END;
+    """
+    print(ips_query)
+    df_ips = pd.read_sql(ips_query, engine)
+    print(df_ips)
 
 
 def db_print(engine, table):
